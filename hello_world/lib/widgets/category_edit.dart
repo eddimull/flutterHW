@@ -4,8 +4,10 @@ import 'package:hello_world/services/api.dart';
 
 class CategoryEdit extends StatefulWidget {
   final Category category;
+  final Function categoryCallback;
 
-  const CategoryEdit(this.category, {Key? key}) : super(key: key);
+  const CategoryEdit(this.category, this.categoryCallback, {Key? key})
+      : super(key: key);
 
   @override
   _CategoryEditState createState() => _CategoryEditState();
@@ -75,14 +77,10 @@ class _CategoryEditState extends State<CategoryEdit> {
     if (!form!.validate()) {
       return;
     }
+    widget.category.name = categoryNameController.text;
 
-    apiService
-        .updateCategory(widget.category.id, categoryNameController.text)
-        .then((Category category) => Navigator.pop(context))
-        .catchError((exception) {
-      setState(() {
-        errorMessage = exception.toString();
-      });
-    });
+    await widget.categoryCallback(widget.category);
+    // ignore: use_build_context_synchronously
+    Navigator.pop(context);
   }
 }
