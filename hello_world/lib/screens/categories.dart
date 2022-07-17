@@ -1,22 +1,7 @@
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-
-class Category {
-  int id;
-  String name;
-
-  Category({required this.id, required this.name});
-
-  factory Category.fromJson(Map<String, dynamic> json) {
-    return Category(
-      id: json['id'],
-      name: json['name'],
-    );
-  }
-}
+import 'package:hello_world/models/Category.dart';
+import 'package:hello_world/services/api.dart';
+import 'package:hello_world/widgets/category_edit.dart';
 
 class Categories extends StatefulWidget {
   const Categories({Key? key}) : super(key: key);
@@ -27,52 +12,16 @@ class Categories extends StatefulWidget {
 
 class CategoriesState extends State<Categories> {
   late Future<List<Category>> futureCategories;
-  final _formKey = GlobalKey<FormState>();
-  late Category selectedCategory;
-  final categoryNameController = TextEditingController();
-
-  Future<List<Category>> fetchCategories() async {
-    http.Response response =
-        await http.get(Uri.parse('http://localhost/api/categories'));
-    // print(response.body);
-    List categories = jsonDecode(response.body);
-
-    return categories.map((category) => Category.fromJson(category)).toList();
-  }
-
-  Future saveCategory() async {
-    final form = _formKey.currentState;
-
-    if (!form!.validate()) {
-      return;
-    } else {
-      String uri = 'http://localhost/api/categories/${selectedCategory.id}';
-      await http.put(Uri.parse(uri),
-          headers: {
-            HttpHeaders.contentTypeHeader: 'application/json',
-            HttpHeaders.acceptHeader: 'application/json'
-          },
-          body: jsonEncode({'name': categoryNameController.text}));
-
-      // ignore: use_build_context_synchronously
-      Navigator.pop(context);
-    }
-  }
+  ApiService apiService = ApiService();
 
   @override
   void initState() {
     super.initState();
-    futureCategories = fetchCategories();
+    futureCategories = apiService.fetchCategories();
   }
 
   @override
   Widget build(BuildContext context) {
-    final List<String> categories = <String>[
-      'Category 1',
-      'Category 2',
-      'Category 3',
-    ];
-
     return Scaffold(
         appBar: AppBar(
           title: const Text('Categories'),
@@ -93,40 +42,11 @@ class CategoriesState extends State<Categories> {
                               trailing: IconButton(
                                   icon: const Icon(Icons.edit),
                                   onPressed: () {
-                                    selectedCategory = category;
-                                    categoryNameController.text = category.name;
                                     showModalBottomSheet(
                                         context: context,
+                                        isScrollControlled: true,
                                         builder: (context) {
-                                          return Form(
-                                              key: _formKey,
-                                              child: Container(
-                                                padding:
-                                                    const EdgeInsets.all(20),
-                                                child:
-                                                    Column(children: <Widget>[
-                                                  TextFormField(
-                                                      validator: (value) {
-                                                        if (value!.isEmpty) {
-                                                          return 'Enter category name';
-                                                        }
-                                                        return null;
-                                                      },
-                                                      controller:
-                                                          categoryNameController,
-                                                      decoration:
-                                                          const InputDecoration(
-                                                        border:
-                                                            OutlineInputBorder(),
-                                                        labelText:
-                                                            'Category Name',
-                                                      )),
-                                                  ElevatedButton(
-                                                      onPressed: () =>
-                                                          {saveCategory()},
-                                                      child: const Text('Save'))
-                                                ]),
-                                              ));
+                                          return CategoryEdit(category);
                                         });
                                   }),
                             );
