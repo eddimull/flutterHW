@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hello_world/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
-
+import 'package:hello_world/scripts/device.dart';
 
 class Register extends StatefulWidget {
   const Register({Key? key}) : super(key: key);
@@ -17,8 +17,15 @@ class _RegisterState extends State<Register> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final passwordConfirmController = TextEditingController();
-
+  late String deviceName;
+  
   String errorMessage = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _getDeviceName();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -121,6 +128,11 @@ class _RegisterState extends State<Register> {
     );
   }
 
+  Future<void> _getDeviceName() async{
+    deviceName = await Device.name();
+  }
+
+
   Future<void> submit() async {
 
     final form = _formKey.currentState;
@@ -134,7 +146,7 @@ class _RegisterState extends State<Register> {
             emailController.text,
             passwordController.text,
             passwordConfirmController.text,
-            'Flutter Device');
+            deviceName);
         // ignore: use_build_context_synchronously
         Navigator.pop(context);
       } catch (e) {
