@@ -33,4 +33,36 @@ class ApiService {
 
     return Category.fromJson(jsonDecode(response.body));
   }
+
+  Future<Category> addCategory(String name) async {
+    String uri = '${baseUrl}categories';
+
+    http.Response response = await http.post(Uri.parse(uri),
+        headers: {
+          HttpHeaders.contentTypeHeader: 'application/json',
+          HttpHeaders.acceptHeader: 'application/json',
+        },
+        body: jsonEncode({'name': name}));
+
+    if (response.statusCode != 201) {
+      throw Exception('Error Creating. Code: ${response.statusCode}');
+    }
+
+    return Category.fromJson(jsonDecode(response.body));
+  }
+
+  Future<void> deleteCategory(id) async {
+    String uri = '${baseUrl}categories/$id';
+
+    http.Response response = await http.delete(
+      Uri.parse(uri),
+      headers: {
+        HttpHeaders.acceptHeader: 'application/json',
+      },
+    );
+
+    if (response.statusCode != 204) {
+      throw Exception('Error Deleting. Code: ${response.statusCode}');
+    }
+  }
 }
