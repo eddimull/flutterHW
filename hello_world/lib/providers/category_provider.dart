@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:hello_world/providers/auth_provider.dart';
 import 'package:hello_world/services/api.dart';
 
 import '../models/Category.dart';
@@ -6,9 +7,11 @@ import '../models/Category.dart';
 class CategoryProvider extends ChangeNotifier {
   List<Category> categories = [];
   late ApiService apiService;
+  late AuthProvider authProvider;
 
-  CategoryProvider() {
-    apiService = ApiService();
+  CategoryProvider(AuthProvider authProvider) {
+    authProvider = authProvider;
+    apiService = ApiService(authProvider.token);
 
     init();
   }

@@ -112,7 +112,7 @@ class _LoginState extends State<Login> {
             passwordController.text,
             deviceName);
         // ignore: use_build_context_synchronously
-        Navigator.pushNamed(context, '/categories');
+        // Navigator.pushNamed(context, '/categories');
       }
       catch(e)
       {

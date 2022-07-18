@@ -15,7 +15,6 @@ class _CategoryAddState extends State<CategoryAdd> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final categoryNameController = TextEditingController();
   String errorMessage = '';
-  ApiService apiService = ApiService();
 
   @override
   Widget build(BuildContext context) {

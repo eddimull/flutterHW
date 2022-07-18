@@ -9,21 +9,24 @@ import 'package:provider/provider.dart';
 
 void main() => runApp(const MyApp());
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
 
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (context) => AuthProvider(),
-      child: Consumer<AuthProvider>(builder: ((context, value, child) {
+      child: Consumer<AuthProvider>(builder: ((context, authProvider, child) {
         
       return MultiProvider(
         providers: [
           ChangeNotifierProvider<CategoryProvider>(
-              create: (context) => CategoryProvider()),
-          ChangeNotifierProvider<AuthProvider>(
-              create: (context) => AuthProvider()),
+              create: (context) => CategoryProvider(authProvider)),
         ],
         child: MaterialApp(
             title: 'Categories App',

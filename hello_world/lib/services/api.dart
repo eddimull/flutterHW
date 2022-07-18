@@ -5,12 +5,18 @@ import 'package:hello_world/models/Category.dart';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  ApiService();
+  late String token;
+  ApiService(this.token);
 
   final String baseUrl = 'http://localhost/api/';
 
   Future<List<Category>> fetchCategories() async {
-    http.Response response = await http.get(Uri.parse('${baseUrl}categories'));
+    http.Response response = await http.get(Uri.parse('${baseUrl}categories'),
+        headers: {
+          HttpHeaders.authorizationHeader: "Bearer $token",
+          HttpHeaders.contentTypeHeader: "application/json",
+          HttpHeaders.acceptHeader: "application/json"
+        });
 
     List categories = jsonDecode(response.body);
 
@@ -24,6 +30,7 @@ class ApiService {
         headers: {
           HttpHeaders.contentTypeHeader: 'application/json',
           HttpHeaders.acceptHeader: 'application/json',
+          HttpHeaders.authorizationHeader: 'Bearer $token',
         },
         body: jsonEncode({'name': category.name}));
 
@@ -41,6 +48,7 @@ class ApiService {
         headers: {
           HttpHeaders.contentTypeHeader: 'application/json',
           HttpHeaders.acceptHeader: 'application/json',
+          HttpHeaders.authorizationHeader: 'Bearer $token',
         },
         body: jsonEncode({'name': name}));
 
@@ -58,6 +66,7 @@ class ApiService {
       Uri.parse(uri),
       headers: {
         HttpHeaders.acceptHeader: 'application/json',
+        HttpHeaders.authorizationHeader: 'Bearer $token',
       },
     );
 
