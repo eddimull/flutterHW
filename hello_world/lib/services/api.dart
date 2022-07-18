@@ -65,4 +65,34 @@ class ApiService {
       throw Exception('Error Deleting. Code: ${response.statusCode}');
     }
   }
+
+  Future<String> register(String name, String email, String password, String passwordConfirm, String deviceName) async {
+    String uri = '${baseUrl}auth/register';
+
+    http.Response response = await http.post(Uri.parse(uri),
+        headers: {
+          HttpHeaders.contentTypeHeader: 'application/json',
+          HttpHeaders.acceptHeader: 'application/json',
+        },
+        body: jsonEncode({
+          'name': name,
+          'email': email,
+          'password': password,
+          'password_confirmation': passwordConfirm,
+          'device_name': deviceName
+        }));
+
+    if (response.statusCode == 422) {
+      Map<String, dynamic> body = jsonDecode(response.body);
+      Map<String, dynamic> errors = body['errors'];
+      String errorMessage = '';
+
+      errors.forEach((key, value) {
+        errorMessage += '$key: $value\n';
+      });
+      throw Exception(errorMessage);
+    }
+
+    return response.body;
+  }
 }
